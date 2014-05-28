@@ -13,7 +13,8 @@ var Model = {
 		this.attributes = [];
 	},
 	prototype: {
-		init: function() {}
+		init: function() {
+		}
 	},
 	create: function() {
 		var object = Object.create(this);
@@ -116,14 +117,26 @@ Model.include({
 });
 
 
-
+Model.include({
+	createRemote: function(url, callback){
+		$.post(url, this.attributes(), callback);
+	},
+	updateRemote: function(url, callback){
+		$.ajax({
+			url : url,
+			data : this.attributes(),
+			success: callback,
+			type: "PUT"
+		});
+	}
+});
 
 var Asset = Model.create();
 Asset.attributes = ["name", "ext"];
-// console.log(Asset);
+console.log(Asset);
 
 var asset = Asset.init();
-asset.create()
+asset.create();
 
 // asset.some = "prop";
 // asset.save();
