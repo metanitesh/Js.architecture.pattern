@@ -8,7 +8,9 @@ Math.guid = function() {
 
 var Model = {
 	inherited: function() {},
-	created: function() {},
+	created: function() {
+		this.records = {};
+	},
 	prototype: {
 		init: function() {}
 	},
@@ -29,21 +31,13 @@ var Model = {
 	},
 	extend: function(obj) {
 		var extended = obj.extend;
-		for (var prop in obj) {
-			if (obj.hasOwnProperty(prop)) {
-				this[prop] = obj[prop];
-			}
-		}
+		$.extend(this, obj);
 		if (extended) extended(this);
 	},
 
 	include: function(obj) {
 		var included = obj.include;
-		for (var prop in obj) {
-			if (obj.hasOwnProperty(prop)) {
-				this.prototype[prop] = obj[prop];
-			}
-		}
+		$.extend(this.prototype, obj);
 		if (included) included(this);
 	}
 
@@ -53,26 +47,55 @@ Model.records = {};
 
 Model.extend({
 	find: function(id) {
-		if (this.records[id]) {
-			return this.records[id];
+		var record = this.records[id];
+		if (!record){ throw("Unknow record");}
+		return record.dup();
+	},
+	populate: function(values){
+		this.records = {};
+
+		for(var i=0, il=values.length; i<il; i++){
+			var record = this.init(values[i]);
+			record.newRecord = false;
+			this.records[record.id] = record;
 		}
-		throw ("unknown record");
 	}
 });
 
 Model.include({
 	newRecord: true,
 	create: function() {
+		if ( !this.id ) this.id = Math.guid();
 		this.newRecord = false;
-		this.parent.records[this.id] = this;
+		this.parent.records[this.id] = this.dup();
 	},
 	destroy: function() {
 		delete this.parent.records[this.id];
 	},
 	update: function() {
-		this.parent.records[this.id] = this;
+		this.parent.records[this.id] = this.dup();
 	},
 	save: function() {
 		this.newRecord ? this.create() : this.update();
+	},
+	dup : function(){
+		$.extend(false, {}, this);
 	}
 });
+
+
+
+var Asset = Model.create();
+console.log(Asset);
+var asset = Asset.init();
+console.log(asset)
+
+// asset.name = "profile image";
+// asset.id = 1;
+// asset.save();
+
+// var asset2 = Asset.init();
+
+// asset2.name = "wife image";
+// asset2.id = 2;
+// asset2.save();
