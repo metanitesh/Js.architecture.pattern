@@ -1,39 +1,27 @@
-(function($, exports){
-	var mod = function(includes){
-		if(includes) this.includes(includes);
-	};
+var exports = this;
 
-	mod.fn = mod.prototype;
+(function(){
+	var mod = {};
 
-	mod.fn.proxy = function(func){
-		return $.proxy(func);
-	};
+	mod.create = function(include){
+		var result = function(){
+			this.init.apply(this, arguments);
+		};
 
-	mod.fn.load = function(func){
-		$(this.proxy(func));
-	};
+		result.fn = result.prototype;
+		result.fn.init = function(){};
 
-	mod.fn.include = function(obj){
-		$.extend(this, obj);
+		result.proxy = function(func){ return $.proxy(func, this); };
+		result.fn.proxy = result.proxy;
+
+		result.include = function(obj) { $.extend(this.fn, obj);};
+		result.extend = function(obj) { $.extend(this, obj);};
+		
+		if(includes) result.includes(includes);
+
+		return result;
 	};
 
 	exports.Controller = mod;
 
-})(jQuery, window);
-
-
-(function($, Controller){
-
-	var mod = new Controller();
-
-	mod.toggleClass = function(e){
-		this.view.toggleClass("over", e.data);
-	};
-
-	mod.load(function(){
-		this.view = $("#view");
-		this.view.mouseover(this.proxy(this.toggleClass), true);
-		this.view.mouseout(this.proxy(this.toggleClass), false);
-	});
-
-})(jQuery, Controller);
+})(jQuery);
