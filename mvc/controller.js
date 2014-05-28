@@ -1,21 +1,23 @@
-(function($){
-
-	var mod = {};
-
-	mod.load = function(func){
-		$($.proxy(func, this));
+(function($, exports){
+	var mod = function(includes){
+		if(includes) this.includes(includes);
 	};
 
-	mod.load(function(){
-		this.view = $("#view");
-	});
+	mod.fn = mod.prototype;
 
-	mod.assertClick = function(e){
-
+	mod.fn.proxy = function(func){
+		return $.proxy(func);
 	};
 
-	mod.load(function(){
-		this.view.find(".asset").click($.proxy(this.assertClick, this))
-	});
+	mod.fn.load = function(func){
+		$(this.proxy(func));
+	};
 
-}(jQuery));
+	mod.fn.include = function(obj){
+		$.extend(this, obj);
+	};
+
+	exports.Controller = mod;
+
+})(jQuery, window);
+
