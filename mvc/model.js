@@ -1,4 +1,4 @@
-ar Model = {
+var Model = {
 	inherited: function() {},
 	created: function() {},
 	prototype: {
@@ -40,3 +40,31 @@ ar Model = {
 	}
 
 };
+
+Model.records = {};
+
+Model.extend({
+	find: function(id) {
+		if (this.records[id]) {
+			return this.records[id];
+		}
+		throw ("unknown record");
+	}
+});
+
+Model.include({
+	newRecord: true,
+	create: function() {
+		this.newRecord = false;
+		this.parent.records[this.id] = this;
+	},
+	destroy: function() {
+		delete this.parent.records[this.id];
+	},
+	update: function() {
+		this.parent.records[this.id] = this;
+	},
+	save: function() {
+		this.newRecord ? this.create() : this.update();
+	}
+});
