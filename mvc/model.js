@@ -10,6 +10,7 @@ var Model = {
 	inherited: function() {},
 	created: function() {
 		this.records = {};
+		this.attributes = [];
 	},
 	prototype: {
 		init: function() {}
@@ -45,6 +46,20 @@ var Model = {
 
 Model.records = {};
 
+Model.LocalStorage = {
+	saveLocal: function(name){
+		var result = [];
+		for(var i in this.records){
+			result.push(this.records[i]);
+		}
+		localStorage[name] = JSON.stringify(result);
+	},
+	loadLocal: function(name){
+		var result = JSON.parse(localStorage[name]);
+		this.populate(result);
+	}
+}
+
 Model.extend({
 	find: function(id) {
 		var record = this.records[id];
@@ -64,6 +79,10 @@ Model.extend({
 
 Model.include({
 	newRecord: true,
+	init: function(attrs){
+		if ( !this.id ) this.id = Math.guid();
+		$.extend(this, attrs);
+	},
 	create: function() {
 		if ( !this.id ) this.id = Math.guid();
 		this.newRecord = false;
@@ -73,22 +92,42 @@ Model.include({
 		delete this.parent.records[this.id];
 	},
 	update: function() {
-		this.parent.records[this.id] = this.dup();
+		this.parent.records[this.id] = this.dup;
 	},
 	save: function() {
 		this.newRecord ? this.create() : this.update();
 	},
 	dup : function(){
-		$.extend(false, {}, this);
+		var dup = $.extend(true, {}, this);
+		
+	},
+	attributes: function(){
+		var result = {};
+		for(var i in this.parent.attributes){
+			var attr = this.parent.attributes[i];
+			result[attr] = this[attr];
+		}
+		result.id = this.id;
+		return result;
+	},
+	toJson: function(){
+		return(this.attributes());
 	}
 });
 
 
 
+
 var Asset = Model.create();
-console.log(Asset);
+Asset.attributes = ["name", "ext"];
+// console.log(Asset);
+
 var asset = Asset.init();
-console.log(asset)
+asset.create()
+
+// asset.some = "prop";
+// asset.save();
+// console.log(Asset.records)
 
 // asset.name = "profile image";
 // asset.id = 1;
