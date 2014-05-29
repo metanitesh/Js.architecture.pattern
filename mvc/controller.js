@@ -3,7 +3,7 @@ var exports = this;
 (function(){
 	var mod = {};
 
-	mod.create = function(include){
+	mod.create = function(includes){
 		var result = function(){
 			this.init.apply(this, arguments);
 		};
@@ -17,7 +17,7 @@ var exports = this;
 		result.include = function(obj) { $.extend(this.fn, obj);};
 		result.extend = function(obj) { $.extend(this, obj);};
 		
-		if(includes) result.includes(includes);
+		if(includes) result.include(includes);
 
 		return result;
 	};
@@ -27,16 +27,37 @@ var exports = this;
 })(jQuery);
 
 $(function($){
-	var toggleView = Controller.create({
-		init: function(view){
-			this.view = $(view);
-			this.view.mouseover(this.proxy(this.toggleClass), true);
-			this.view.mouseout(this.proxy(this.toggleClass), true);
+	var ToggleView = Controller.create({
+		init: function(element){
+			this.el = $(element);
+			this.refereshElements();
+			this.searchForm.submit(this.proxy(this.search));
+		},
+
+		search: function(){
+
+		},
+
+		$: function(selector){
+			return $(selector, this.el);
+		},
+
+		refereshElements: function(){
+			for(var key in this.elements){
+				this[this.elements[key]] = this.$(key);
+			}
 		},
 
 		toggleClass: function(e){
 			this.view.toggleClass("over", e.data);
-		}
+		},
+
+		elements: {
+			"form.searchForm": "searchForm",
+			"form input[type=text]": "searchInput"
+		},
+
+
 	});
 
 	new ToggleView("view");
