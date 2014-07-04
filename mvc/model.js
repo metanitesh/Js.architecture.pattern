@@ -137,17 +137,3 @@ console.log(Asset);
 
 var asset = Asset.init();
 asset.create();
-
-// asset.some = "prop";
-// asset.save();
-// console.log(Asset.records)
-
-// asset.name = "profile image";
-// asset.id = 1;
-// asset.save();
-
-// var asset2 = Asset.init();
-
-// asset2.name = "wife image";
-// asset2.id = 2;
-// asset2.save();
