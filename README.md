@@ -1,0 +1,1 @@
+### collection of javascript architecture pattern e.g. MVC
