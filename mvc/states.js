@@ -12,12 +12,13 @@ var Events = {
 
 
 var StateMachine = function(){};
+StateMachine.fn = StateMachine.prototype;
 
 $.extend(StateMachine.fn, Events);
 
 StateMachine.fn.add = function(controller){
 	this.bind("change", function(e, current){
-		if(controller == current){
+		if(controller === current){
 			controller.activate();
 		}else{
 			controller.deactivate();
@@ -30,13 +31,21 @@ StateMachine.fn.add = function(controller){
 };
 
 var con1 = {
-	activate: function(){},
-	deactivate: function(){}
+	activate: function(){
+		$("#con1").addClass("active");
+	},
+	deactivate: function(){
+		$("#con1").removeClass("active");
+	}
 };
 
 var con2 = {
-	activate: function(){},
-	deactivate: function(){}
+	activate: function(){
+		$("#con2").addClass("active");
+	},
+	deactivate: function(){
+		$("#con2").removeClass("active");
+	}
 };
 
 var sm = new StateMachine();
